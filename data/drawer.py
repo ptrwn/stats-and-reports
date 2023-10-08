@@ -2,11 +2,10 @@ from openpyxl import Workbook, load_workbook
 
 from openpyxl.chart import (
     DoughnutChart,
-    PieChart,
     BarChart,
-    Reference,
-    Series,
+    Reference
 )
+
 from openpyxl.chart.series import DataPoint
 from openpyxl.drawing.fill import PatternFillProperties
 from openpyxl.chart.label import DataLabelList
@@ -46,7 +45,7 @@ def draw_csat_doughnut(book, **csat_data):
     chart.add_data(data, titles_from_data=True)
     chart.set_categories(labels)
     chart.style = 2
-    chart.title = "CSAT = {}%".format(csat_data['CSAT score'])
+    chart.title = "CSAT = {}%".format(csat_data['CSAT score']*100)
 
     slices = [DataPoint(idx=i) for i in range(9)]
     irrel, rel, mixed, dup, vsat, sat, neu, dsat, vdsat = slices
@@ -75,7 +74,6 @@ def draw_dsat_reason_bars(book, dsats):
     # get_dsat_reason() function
 
     num_reas = len(dsats)
-    # dsats = dsats.transpose()
 
     wb = load_workbook(book)
     ws = wb.create_sheet('dsat_reason_bars')
@@ -86,7 +84,7 @@ def draw_dsat_reason_bars(book, dsats):
     chart = BarChart()
     chart.type = 'col'
     chart.style = 10
-    chart.y_axis.title = 'percentage'
+    chart.y_axis.title = 'count'
     chart.x_axis.title = 'dsat drivers'
     titles = Reference(ws, min_col=1, max_col=1, min_row=2, max_row=num_reas + 1)
     data = Reference(ws, min_col=2, max_col=2, min_row=1, max_row=num_reas + 1)

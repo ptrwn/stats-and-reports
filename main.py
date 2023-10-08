@@ -4,6 +4,7 @@ import data.drawer as drawer
 import data.stats as stats
 from data.data_generator import make_sample_df
 
+
 @click.command()
 @click.option('--startp', '--start_of_reporting_period',
               prompt='Enter start datetime of reporting period',

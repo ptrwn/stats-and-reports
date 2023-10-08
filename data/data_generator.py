@@ -1,18 +1,11 @@
 # generates a test file similar to export from ticket processing tool
 import pandas as pd
 import numpy as np
-import sqlite3
-
-
-
-class DataGenerator():
-
-    def __init__(self, sample_size, start_date, end_date) -> None:
-        pass
-
 
 
 def random_timestamp(start, end):
+    '''Returns a random timestamp between start and end'''
+
     startp = pd.Timestamp(start)
     endp = pd.Timestamp(end)
     dts = (endp - startp).total_seconds()
@@ -20,13 +13,12 @@ def random_timestamp(start, end):
 
 
 def make_sample_df(startp, endp, size):
+    '''Returns a df filled in with test data'''
 
     lipsum = 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum'
-    c_names = lipsum.split(' ')
+    c_names = list(set(lipsum.lower().split(' ')))
 
-    df = pd.DataFrame(columns=['Survey Received Time', 'Ticket Id', 'Rating', 'Comment', 'Company',
-       'Group', 'Agent', 'Primary reason', 'Secondary reason', 'QA score', 'Action',
-       'Comment DSAT analysis'])
+    df = pd.DataFrame(columns=['Survey Received Time', 'Ticket Id', 'Rating', 'Company', 'Group', 'Primary reason', 'QA score'])
 
     dsat_reasons = ['resolution delay', 'resolution quality', 'follow-up adherence', 'product bug', 'product usability',
                     'support resources', 'other', 'unmanaged expectations', 'Mixed feedback', 'Duplicate']
@@ -46,11 +38,7 @@ def make_sample_df(startp, endp, size):
         df.at[item, 'Survey Received Time'] = random_timestamp(startp, endp)
 
     for key in names.keys():
-        
         df[key] = np.random.choice(names[key], size=size)
 
     return df
 
-
-if __name__ == '__main__':
-    make_sample_df(100)
