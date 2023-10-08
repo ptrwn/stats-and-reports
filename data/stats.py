@@ -1,28 +1,4 @@
 import pandas as pd
-import numpy as np
-from pathlib import Path
-
-
-def get_df():
-
-    data_folder = Path("C:/Users/1/prg/py/jupy and tresh/DSATs/")
-
-    file_to_open = data_folder / "CSAT ALL.csv"
-
-    # reading the .csv
-    # the .csv is prepared manually, updated with DSAT analysis
-    df = pd.read_csv(file_to_open, keep_default_na=False, na_values=np.nan)
-
-    # replace empty strings with NaN
-    df.replace('', np.nan, inplace=True)
-
-    # convert timestamps from string to datetime
-    df[['Survey Received Time']] = pd.to_datetime(df['Survey Received Time'], format='%m/%d/%Y %H:%M')
-
-    # convert Ticket Id from string to int64
-    df[['Ticket Id']] = pd.to_numeric(df['Ticket Id'])
-
-    return df
 
 
 def stat_counter(d):
@@ -81,15 +57,7 @@ def stat_counter(d):
     return res
 
 
-# cut data for a period
-def get_df_period(df, beg, end):
-    # begp = pd.Timestamp('2019-07-01 00:00:00')
-    # endp = pd.Timestamp('2019-07-31 23:59:59')
-    begp = pd.Timestamp(beg)
-    endp = pd.Timestamp(end)
-    df_per = df.loc[(df['Survey Received Time'] > begp) & (df['Survey Received Time'] < endp)]
-    df_per.sort_values(by='Survey Received Time')
-    return df_per
+
 
 
 # cut data for specific customer(s) only
