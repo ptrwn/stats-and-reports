@@ -49,15 +49,8 @@ def make_sample_df(startp, endp, size):
         
         df[key] = np.random.choice(names[key], size=size)
 
-    
-    # # convert timestamps from string to datetime
-    # df[['Survey Received Time']] = pd.to_datetime(df['Survey Received Time'], format='%m/%d/%Y %H:%M')
-
-    # # convert Ticket Id from string to int64
-    # df[['Ticket Id']] = pd.to_numeric(df['Ticket Id'])
-
     return df
 
 
 if __name__ == '__main__':
-    make_test_df(100)
+    make_sample_df(100)

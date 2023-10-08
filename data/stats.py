@@ -57,32 +57,28 @@ def stat_counter(d):
     return res
 
 
-
-
-
-# cut data for specific customer(s) only
 def get_cust(d, *cust_names):
+    '''Get data for specific customer(s) only'''
     res = pd.DataFrame()
     for name in cust_names:
         d_cust = d.loc[d['Company'] == name]
         res = pd.concat([res, d_cust])
     return res
 
-# get numbered list of customers present in a df
-def get_list_of_customers(d):
-        custs = d['Company'].value_counts().to_frame().reset_index()
 
+def get_list_of_customers(d):
+        '''Get numbered list of customers present in a df'''
+        custs = d['Company'].value_counts().to_frame().reset_index()
         res = {}
         for item in list(enumerate(custs.iloc[0:]['index'], 1)):
             res[item[0]] = item[1]
-
         return res
 
 
 def get_dsat_reason(d):
-    # get primary reasons for negative feedback
+    '''Get primary reasons for negative feedback'''
     negative = d.loc[d['Rating'].isin(['Neutral', 'DSAT', 'VDSAT'])]
     dsat_reasons = negative['Primary reason'].value_counts().to_frame().reset_index()
-    dsat_reasons['reas_pct'] = dsat_reasons['Primary reason'] / dsat_reasons['Primary reason'].sum()
+    dsat_reasons['reas_pct'] = dsat_reasons['count'] / dsat_reasons['count'].sum()
 
     return dsat_reasons

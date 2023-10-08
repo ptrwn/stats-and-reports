@@ -1,85 +1,52 @@
-import stats
 import click
-import drawer
 from openpyxl import Workbook
+import data.drawer as drawer
+import data.stats as stats
+from data.data_generator import make_sample_df
 
 @click.command()
-@click.option('--begp',
-              type=click.DateTime(formats=["%Y-%m-%d %H:%M:%S"]),
+@click.option('--startp', '--start_of_reporting_period',
               prompt='Enter start datetime of reporting period',
-              help='The datetime must be in YYYY-MM-DD HH:MM:SS format.')
-@click.option('--endp',
+              default='2019-07-01 00:00:00',
               type=click.DateTime(formats=["%Y-%m-%d %H:%M:%S"]),
+              show_default=True,
+              help='The datetime must be in YYYY-MM-DD HH:MM:SS format')
+@click.option('--endp', '--end_of_reporting_period',
               prompt='Enter end datetime of reporting period',
+              default='2019-07-31 23:59:59',
+              type=click.DateTime(formats=["%Y-%m-%d %H:%M:%S"]),
+              show_default=True,
               help='The datetime must be in YYYY-MM-DD HH:MM:SS format.')
-def boo(begp, endp):
-    """Such docstring wow"""
+@click.option('--num',
+              prompt='Enter number of tickets in report',
+              default=100,
+              show_default=True)
+@click.option('--file_name',
+              prompt='Enter the name of the resulting file',
+              default='csat_stat',
+              show_default=True)
+def main(startp, endp, num, file_name):
+    
+    if not file_name.endswith('.xlsx'):
+        file_name+='.xlsx'
 
-    df = stats.get_df()
-    df_per = stats.get_df_period(df, begp, endp)
-    cust_dict = stats.get_list_of_customers(df_per)
+    df = make_sample_df(startp, endp, num)
 
-    print('There is feedback from the following customers within the selected period:')
-    for i in cust_dict:
-        print(i, cust_dict[i])
-
-    wb_name = "csat_stat.xlsx"
     wb = Workbook()
-    wb.save(filename=wb_name)
+    
+    wb = Workbook()
+    wb.save(filename=file_name)
 
-    stayin = True
-    while stayin:
-        print('Enter customer numbers separated by comma, or all for all')
-        x = input()
-        if x.lower() == 'all':
-            cust_names_l = list(cust_dict.values())
-            d_cust = stats.get_cust(df_per, *cust_names_l)
-            stat = stats.stat_counter(d_cust)
-            dis_reas = stats.get_dsat_reason(d_cust)
+    stat = stats.stat_counter(df)
+    dis_reas = stats.get_dsat_reason(df)
 
-            wb_name = "csat_stat.xlsx"
-            wb = Workbook()
-            wb.save(filename=wb_name)
-
-            drawer.draw_csat_doughnut(wb_name, **stat)
-            drawer.draw_dsat_reason_bars(wb_name, dis_reas)
-
-            print(stat)
-            break
-        else:
-            cust_l = []
-            cust_names_l = []
-            err_l = []
-            x = x.replace(' ', '')
-            for i in x.split(','):
-                try:
-                    i = int(i)
-                except:
-                    err_l.append(i)
-                    continue
-
-                if i in list(cust_dict.keys()):
-                    cust_l.append(i)
-                    cust_names_l.append(cust_dict[i])
-                else:
-                    err_l.append(i)
-                    continue
-
-        if err_l: print('these values were not in customer list, omitting them:', err_l)
-        if not cust_l:
-            print('no one home')
-        else:
-            print('got these customers:')
-            for i in cust_l:
-                print(cust_dict[i])
-
-            d_cust = stats.get_cust(df_per, *cust_names_l)
-            stat = stats.stat_counter(d_cust)
-            print(stat)
-
-        stayin = False
-
+    drawer.draw_csat_doughnut(file_name, **stat)
+    drawer.draw_dsat_reason_bars(file_name, dis_reas)
 
 
 if __name__ == '__main__':
-    boo()
+    main()
+
+
+
+
