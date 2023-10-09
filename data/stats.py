@@ -1,10 +1,11 @@
 import pandas as pd
+from pandas.errors import EmptyDataError
 
 
 def stat_counter(d):
         
     if d.empty:
-        return "EMPTY FRAME"
+        raise EmptyDataError
 
     all_scores_num = len(d)
     mixed_num = d.loc[d['Primary reason'] == 'Mixed feedback'].shape[0]
@@ -34,6 +35,7 @@ def stat_counter(d):
 
 def get_cust(d, *cust_names):
     '''Get data for specific customer(s) only'''
+
     res = pd.DataFrame()
     for name in cust_names:
         d_cust = d.loc[d['Company'] == name]
@@ -41,17 +43,9 @@ def get_cust(d, *cust_names):
     return res
 
 
-def get_list_of_customers(d):
-        '''Get numbered list of customers present in the df'''
-        custs = d['Company'].value_counts().to_frame().reset_index()
-        res = {}
-        for item in list(enumerate(custs.iloc[0:]['index'], 1)):
-            res[item[0]] = item[1]
-        return res
-
-
 def get_dsat_reason(d):
     '''Get primary reasons for negative feedback'''
+
     negative = d.loc[d['Rating'].isin(['Neutral', 'DSAT', 'VDSAT'])]
     dsat_reasons = negative['Primary reason'].value_counts().to_frame().reset_index()
     dsat_reasons['reas_pct'] = 100 * dsat_reasons['count'] / dsat_reasons['count'].sum()

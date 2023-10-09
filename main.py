@@ -32,8 +32,6 @@ def main(startp, endp, num, file_name):
         file_name+='.xlsx'
 
     df = make_sample_df(startp, endp, num)
-
-    wb = Workbook()
     
     wb = Workbook()
     wb.save(filename=file_name)
