@@ -32,12 +32,12 @@ def main(startp, endp, num, file_name):
         file_name+='.xlsx'
 
     df = make_sample_df(startp, endp, num)
-    
+   
     wb = Workbook()
     wb.save(filename=file_name)
 
     stat = stats.stat_counter(df)
-    dis_reas = stats.get_dsat_reason(df)
+    dis_reas = stats.get_dsat_reasons(df)
 
     drawer.draw_csat_doughnut(file_name, **stat)
     drawer.draw_dsat_reason_bars(file_name, dis_reas)
