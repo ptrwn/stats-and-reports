@@ -26,21 +26,21 @@ from data.data_generator import make_sample_df
               prompt='Enter the name of the resulting file',
               default='csat_stat',
               show_default=True)
-def main(startp, endp, num, file_name):
+def main(startp: click.DateTime, endp: click.DateTime, num: int, file_name: str) -> None:
     
     if not file_name.endswith('.xlsx'):
         file_name+='.xlsx'
 
     df = make_sample_df(startp, endp, num)
-   
-    wb = Workbook()
-    wb.save(filename=file_name)
-
     stat = stats.stat_counter(df)
     dis_reas = stats.get_dsat_reasons(df)
+   
+    wb = Workbook()
+    wb = drawer.draw_csat_doughnut(wb, **stat)
+    wb = drawer.draw_dsat_reason_bars(wb, dis_reas)
+    del wb['Sheet'] # remove the default empty first sheet
 
-    drawer.draw_csat_doughnut(file_name, **stat)
-    drawer.draw_dsat_reason_bars(file_name, dis_reas)
+    wb.save(filename=file_name)
 
 
 if __name__ == '__main__':

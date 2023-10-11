@@ -1,24 +1,27 @@
-from openpyxl import Workbook, load_workbook
-
 from openpyxl.chart import (
     DoughnutChart,
     BarChart,
     Reference
 )
-
+import pandas as pd
+from typing import Dict
+from openpyxl import Workbook
 from openpyxl.chart.series import DataPoint
 from openpyxl.drawing.fill import PatternFillProperties
 from openpyxl.chart.label import DataLabelList
 from openpyxl.utils.dataframe import dataframe_to_rows
 
 
-def draw_csat_doughnut(book, **csat_data):
-    # csat_data is a dictionary produced by stat_counter function
+def draw_csat_doughnut(wb: Workbook, **csat_data: Dict) -> Workbook:
+    '''Creates a sheet with doughnut chart in an existing book.
+    
+    Args:
+        wb: workbook, a sheet with chart will be added there
+        csat_data: summary of stats to visualize, produced by stat_counter 
 
-    # export_list - list for export into Excel worksheet with 3 columns,
-    # to draw doughnut-in-doughnut chart. 'inner' and 'outer' are for
-    # corresponding circles on d'n'd chart
-
+    Returns:
+        wb: updated workbook
+    '''
 
     export_list = [
         ['category', 'inner', 'outer'],
@@ -33,7 +36,6 @@ def draw_csat_doughnut(book, **csat_data):
         ['VDSAT', float('nan'), csat_data['VDSAT']]
     ]
 
-    wb = load_workbook(book)
     ws = wb.create_sheet('csat_doughnut')
 
     for row in export_list:
@@ -65,19 +67,23 @@ def draw_csat_doughnut(book, **csat_data):
     dsat.graphicalProperties.solidFill = "FFAA00"
     vdsat.graphicalProperties.solidFill = "FF0000"
 
-    ws.add_chart(chart, "E1")
-    wb.save(book)
+    ws.add_chart(chart, "E2")
+    return wb 
 
 
-def draw_dsat_reason_bars(book, dsats):
-    # takes as an argument df 'dsats' with dsat reasons produced by
-    # get_dsat_reason() function
+def draw_dsat_reason_bars(wb: Workbook, dsats: pd.DataFrame) -> Workbook:
+    '''Creates a sheet with bar chart in an existing book.
+    
+    Args:
+        wb: workbook, a sheet with chart will be added there
+        dsats: summary of dsat reasons to visualize, produced by get_dsat_reasons 
+
+    Returns:
+        wb: updated workbook
+    '''
 
     num_reas = len(dsats)
-
-    wb = load_workbook(book)
     ws = wb.create_sheet('dsat_reason_bars')
-
     for row in dataframe_to_rows(dsats, index=False, header=True):
         ws.append(row)
 
@@ -97,5 +103,4 @@ def draw_dsat_reason_bars(book, dsats):
     chart.title = "Dissatisfaction reasons"
     ws.add_chart(chart, "E2")
 
-    # Close the Pandas Excel writer and output the Excel file.
-    wb.save(book)
+    return wb

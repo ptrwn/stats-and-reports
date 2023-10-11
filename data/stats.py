@@ -4,7 +4,7 @@ from pandas.errors import EmptyDataError
 
 
 def stat_counter(df: pd.DataFrame) -> pd.DataFrame:
-    '''Gets summary of satisfaction scores from stats df'''
+    '''Makes summary of satisfaction scores from stats df.'''
         
     if df.empty:
         raise EmptyDataError('Empty dataframe')
@@ -34,13 +34,13 @@ def stat_counter(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_data_per_customers(df: pd.DataFrame, cust_names: List[str]) -> pd.DataFrame:
-    '''Gets data for specific customer(s) only'''
+    '''Gets data for specific customer(s) only.'''
 
     return df.loc[df['Company'].isin(cust_names)]
 
 
 def get_dsat_reasons(df: pd.DataFrame) -> pd.DataFrame:
-    '''Gets primary reasons for negative feedback'''
+    '''Gets primary reasons for negative feedback.'''
 
     negative = df.loc[df['Rating'].isin(['Neutral', 'DSAT', 'VDSAT'])]
     dsat_reasons = negative['Primary reason'].value_counts().to_frame().reset_index()
