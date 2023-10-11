@@ -25,11 +25,11 @@ def stat_counter(df: pd.DataFrame) -> pd.DataFrame:
         'Irrelevant': mixed_num + duplicates_num,
         'Mixed': mixed_num,
         'Duplicate': duplicates_num,
-        'VSAT': counter['VSAT'],
-        'SAT': counter['SAT'],
-        'Neutral': counter['Neutral'],
-        'DSAT': counter['DSAT'],
-        'VDSAT': counter['VDSAT']
+        'VSAT': counter.get('VSAT', 0),
+        'SAT': counter.get('SAT', 0),
+        'Neutral': counter.get('Neutral', 0),
+        'DSAT': counter.get('DSAT', 0),
+        'VDSAT': counter.get('VDSAT', 0)
     }
 
 

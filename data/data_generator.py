@@ -2,13 +2,16 @@ import pandas as pd
 import numpy as np
 
 
-def random_timestamp(start, end):
-    '''Returns a random timestamp between start and end'''
+def random_timestamps(start, end, size):
+    '''Returns a list of random timestamps between start and end'''
 
     startp = pd.Timestamp(start)
     endp = pd.Timestamp(end)
     dts = (endp - startp).total_seconds()
-    return startp + pd.Timedelta(np.random.uniform(0, dts), 's')
+    res = []
+    for _ in range(size):
+        res.append(startp + pd.Timedelta(np.random.uniform(0, dts), 's'))
+    return res
 
 
 def make_sample_df(startp, endp, size):
@@ -22,22 +25,25 @@ def make_sample_df(startp, endp, size):
     dsat_reasons = ['resolution delay', 'resolution quality', 'follow-up adherence', 'product bug', 'product usability',
                     'support resources', 'other', 'unmanaged expectations', 'Mixed feedback', 'Duplicate']
 
-    names = {
+    columns_to_fill = {
         'Primary reason': dsat_reasons,
         'Customer_region': ['AMER', 'EMEA', 'APAC', 'EUR'],
         'Group': ['A', 'B', 'C', 'D'],
         'Company':  c_names,
-        'Rating': ['VSAT', 'SAT', 'VDSAT', 'Neutral', 'DSAT'],
+        'Rating': ['VSAT', 'SAT', 'Neutral', 'DSAT', 'VDSAT'],
     }
 
     df['Ticket Id'] = np.random.randint(200, 9000, size=size)
     df['QA score'] = np.random.randint(80, 110, size=size)
+    df['Survey Received Time'] = random_timestamps(startp, endp, size)
     
-    for item in df.index:
-        df.at[item, 'Survey Received Time'] = random_timestamp(startp, endp)
+    for key in ['Customer_region', 'Group', 'Company', 'Rating']:
+        df[key] = np.random.choice(columns_to_fill[key], size=size)
 
-    for key in names.keys():
-        df[key] = np.random.choice(names[key], size=size)
-
+    # dissatisfaction reasons make sense only for negative surveys
+    negatives = ['Neutral', 'DSAT', 'VDSAT']
+    size_negative = df[df['Rating'].isin(negatives)].shape[0]
+    df.loc[df['Rating'].isin(negatives), 'Primary reason'] = np.random.choice(dsat_reasons, size=size_negative)
+    
     return df
 
